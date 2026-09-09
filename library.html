@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>书库 · 读书</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="page-library">
+  <nav class="topbar">
+    <a href="index.html" class="brand">📖 读书</a>
+    <div class="nav-links">
+      <a href="index.html">首页</a>
+      <a href="library.html" class="active">书库</a>
+      <a href="my.html">我的</a>
+      <a href="login.html" id="nav-auth">登录</a>
+    </div>
+  </nav>
+
+  <main class="library-main">
+    <header class="library-header">
+      <h1>书库</h1>
+      <p class="library-sub" id="library-count">共 0 本</p>
+      <div class="library-controls">
+        <input id="search-input" type="search" class="search-input"
+               placeholder="🔍 搜书名、作者或类别…" autocomplete="off">
+        <div id="cat-filter" class="cat-filter" role="tablist"></div>
+      </div>
+    </header>
+
+    <section id="library-grid" class="library-grid"></section>
+    <p id="library-empty" class="library-empty hidden">没有匹配的书。</p>
+  </main>
+
+  <script src="assets/js/supabase-config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/distilled-data.js"></script>
+  <script src="assets/js/reads.js"></script>
+  <script src="assets/js/cover.js"></script>
+  <script src="assets/js/library.js"></script>
+  <script>
+    window.Auth?.onChange((user) => {
+      const link = document.getElementById("nav-auth");
+      if (!link) return;
+      if (user) {
+        link.textContent = (user.email || "").split("@")[0] || "已登录";
+        link.href = "my.html";
+      } else {
+        link.textContent = "登录";
+        link.href = "login.html";
+      }
+    });
+  </script>
+</body>
+</html>

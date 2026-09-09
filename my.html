@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>我的读书清单 · 读书转盘</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="page-my">
+  <nav class="topbar">
+    <a href="index.html" class="brand"><svg class="brand-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6c-1.9-1.4-4.3-1.8-8-1.4v13.2c3.7-.4 6.1 0 8 1.4 1.9-1.4 4.3-1.8 8-1.4V4.6c-3.7-.4-6.1 0-8 1.4z" fill="currentColor"/><path d="M12 6v13.2" stroke="var(--bg)" stroke-width="1.6"/></svg>读书</a>
+    <div class="nav-links">
+      <a href="index.html">首页</a>
+      <a href="library.html">书库</a>
+      <a href="my.html" class="active">我的</a>
+      <a href="login.html" id="nav-auth">登录</a>
+    </div>
+  </nav>
+
+  <main class="my-main">
+    <section id="my-header" class="my-header">
+      <p>加载中……</p>
+    </section>
+    <section id="my-list" class="my-list"></section>
+  </main>
+
+  <script src="assets/js/supabase-config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/distilled-data.js"></script>
+  <script src="assets/js/reads.js"></script>
+  <script src="assets/js/cover.js"></script>
+  <script src="assets/js/my.js"></script>
+  <script>
+    window.Auth?.onChange((user) => {
+      const link = document.getElementById("nav-auth");
+      if (!link) return;
+      if (user) {
+        link.textContent = (user.email || "").split("@")[0] || "已登录";
+        link.href = "my.html";
+      } else {
+        link.textContent = "登录";
+        link.href = "login.html";
+      }
+    });
+  </script>
+</body>
+</html>

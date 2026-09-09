@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>读书 · 10 分钟精读</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="page-home">
+  <nav class="topbar">
+    <a href="index.html" class="brand"><svg class="brand-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6c-1.9-1.4-4.3-1.8-8-1.4v13.2c3.7-.4 6.1 0 8 1.4 1.9-1.4 4.3-1.8 8-1.4V4.6c-3.7-.4-6.1 0-8 1.4z" fill="currentColor"/><path d="M12 6v13.2" stroke="var(--bg)" stroke-width="1.6"/></svg>读书</a>
+    <div class="nav-links">
+      <a href="index.html" class="active">首页</a>
+      <a href="library.html">书库</a>
+      <a href="my.html">我的</a>
+      <a href="login.html" id="nav-auth">登录</a>
+    </div>
+  </nav>
+
+  <main class="picker-main">
+    <div class="hero">
+      <span class="hero-eyebrow">每天 10 分钟精读</span>
+      <h1 class="picker-title">今天，想来学点什么？</h1>
+      <p class="picker-sub">选一个类别定向抽取，或直接随机来一本。先看一个问题，再读精炼全文。</p>
+    </div>
+
+    <div id="cat-chips" class="cat-chips" role="list" aria-label="类别定向选择"></div>
+
+    <button id="pick-btn" class="pick-btn">随机来一本</button>
+
+    <p id="picker-status" class="picker-status" aria-live="polite"></p>
+  </main>
+
+  <script src="assets/js/supabase-config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/distilled-data.js"></script>
+  <script src="assets/js/reads.js"></script>
+  <script src="assets/js/picker.js"></script>
+  <script>
+    window.Auth?.onChange((user) => {
+      const link = document.getElementById("nav-auth");
+      if (!link) return;
+      if (user) {
+        link.textContent = (user.email || "").split("@")[0] || "已登录";
+        link.href = "my.html";
+      } else {
+        link.textContent = "登录";
+        link.href = "login.html";
+      }
+    });
+  </script>
+</body>
+</html>

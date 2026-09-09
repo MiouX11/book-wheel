@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>登录 · 读书转盘</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="page-login">
+  <nav class="topbar">
+    <a href="index.html" class="brand"><svg class="brand-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6c-1.9-1.4-4.3-1.8-8-1.4v13.2c3.7-.4 6.1 0 8 1.4 1.9-1.4 4.3-1.8 8-1.4V4.6c-3.7-.4-6.1 0-8 1.4z" fill="currentColor"/><path d="M12 6v13.2" stroke="var(--bg)" stroke-width="1.6"/></svg>读书</a>
+    <div class="nav-links">
+      <a href="index.html">首页</a>
+      <a href="library.html">书库</a>
+      <a href="my.html">我的</a>
+    </div>
+  </nav>
+
+  <main class="login-main">
+    <div class="login-card">
+      <h1 id="login-title">登录 / 注册</h1>
+      <p class="login-sub">登录后可以在多个设备同步『读过的书』。</p>
+
+      <div id="login-warn" class="login-warn hidden">
+        Supabase 尚未配置，账号功能暂不可用。<br>
+        请按 <a href="README.md" target="_blank">README</a> 里的步骤填 URL / anon key。
+      </div>
+
+      <form id="login-form">
+        <label>
+          <span>邮箱</span>
+          <input type="email" name="email" required autocomplete="email" placeholder="you@example.com">
+        </label>
+        <label>
+          <span>密码（不少于 6 位）</span>
+          <input type="password" name="password" minlength="6" required autocomplete="current-password">
+        </label>
+
+        <div class="btn-row">
+          <button type="submit" class="btn btn-primary" data-action="signin">登录</button>
+          <button type="submit" class="btn btn-ghost" data-action="signup">注册</button>
+        </div>
+      </form>
+
+      <p id="login-msg" class="login-msg"></p>
+    </div>
+  </main>
+
+  <script src="assets/js/supabase-config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/reads.js"></script>
+  <script>
+    const form = document.getElementById("login-form");
+    const msg = document.getElementById("login-msg");
+    const warn = document.getElementById("login-warn");
+    const title = document.getElementById("login-title");
+
+    if (!Auth.isReady()) {
+      warn.classList.remove("hidden");
+      form.querySelectorAll("button").forEach((b) => (b.disabled = true));
+    }
+
+    Auth.onChange((user) => {
+      if (user) {
+        title.textContent = "已登录";
+        msg.innerHTML = `已登录：<b>${user.email}</b> · <a href="my.html">去我的</a> · <button id="lo" class="btn btn-ghost btn-sm">退出</button>`;
+        form.style.display = "none";
+        document.getElementById("lo").onclick = async () => {
+          await Auth.signOut();
+          location.reload();
+        };
+      }
+    });
+
+    // 拦截两个按钮
+    let action = "signin";
+    form.querySelectorAll("button[data-action]").forEach((b) => {
+      b.addEventListener("click", () => (action = b.dataset.action));
+    });
+
+    form.addEventListener("submit", async (ev) => {
+      ev.preventDefault();
+      msg.textContent = "";
+      msg.className = "login-msg";
+      const email = form.email.value.trim();
+      const password = form.password.value;
+      form.querySelectorAll("button").forEach((b) => (b.disabled = true));
+
+      try {
+        if (action === "signup") {
+          await Auth.signUp(email, password);
+          msg.className = "login-msg ok";
+          msg.textContent = "注册成功。若开启了『邮箱验证』，请查收邮件后再登录。";
+        } else {
+          await Auth.signIn(email, password);
+          msg.className = "login-msg ok";
+          msg.textContent = "登录成功，正在同步本地记录…";
+          const r = await Reads.syncLocalToCloud();
+          msg.textContent = r.pushed ? `登录成功，已合并 ${r.pushed} 条本地记录。` : "登录成功。";
+          setTimeout(() => (location.href = "my.html"), 700);
+        }
+      } catch (e) {
+        msg.className = "login-msg err";
+        msg.textContent = "失败：" + (e.message || e);
+      } finally {
+        form.querySelectorAll("button").forEach((b) => (b.disabled = false));
+      }
+    });
+  </script>
+</body>
+</html>
