@@ -36,7 +36,7 @@
         const n = books.filter((b) => b.categoryId === c.id).length;
         return `<button class="cat-tab" data-cat="${c.id}"
           style="--tab-color:${c.color}">
-          ${c.icon} ${escape(c.name)} <span class="cnt">${n}</span>
+          ${getIcon(c.icon, 14)} ${escape(c.name)} <span class="cnt">${n}</span>
         </button>`;
       })
       .join("");
@@ -92,7 +92,7 @@
             ${Cover.html(b, cat)}
             <div class="lib-card-body">
               <div class="lib-card-tag" style="background:${cat.color}22;color:${cat.color}">
-                ${cat.icon} ${escape(cat.name)}
+                ${getIcon(cat.icon, 14)} ${escape(cat.name)}
               </div>
               <div class="lib-card-title">《${escape(b.title)}》</div>
               <div class="lib-card-author">${escape(b.author)}</div>

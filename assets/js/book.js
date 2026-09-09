@@ -34,7 +34,7 @@
         ${coverHtml}
         <div class="ask-meta">
           <span class="tag" style="background:${category.color}22;color:${category.color};border-color:${category.color}66">
-            ${category.icon} ${escapeHtml(category.name)}
+            ${getIcon(category.icon, 14)} ${escapeHtml(category.name)}
           </span>
           <h1 class="book-title">《${escapeHtml(book.title)}》</h1>
           <p class="book-author">${escapeHtml(book.author)}</p>

@@ -25,7 +25,7 @@
       (c) => `<button class="chip" role="listitem"
         data-cat="${c.id}"
         style="--chip-color:${c.color}">
-        <span class="chip-icon">${c.icon}</span>
+        <span class="chip-icon">${getIcon(c.icon, 16)}</span>
         <span class="chip-label">${c.name}</span>
       </button>`
     )
@@ -78,7 +78,7 @@
     overlay.className = "case-overlay";
     overlay.innerHTML = `
       <div class="case-modal">
-        <div class="case-title">${cat ? `开箱 · ${cat.icon} ${escape(cat.name)}` : "开箱 · 随机抽一本"}</div>
+        <div class="case-title">${cat ? `开箱 · ${getIcon(cat.icon, 18)} ${escape(cat.name)}` : "开箱 · 随机抽一本"}</div>
         <div class="case-viewport">
           <div class="case-pointer"></div>
           <div class="case-reel">${items.map(cardHtml).join("")}</div>
@@ -118,7 +118,7 @@
       const c = catById.get(book.categoryId);
       resultEl.innerHTML = `
         <div class="case-book-title">《${escape(book.title)}》</div>
-        <div class="case-book-meta">${c.icon} ${escape(c.name)} · ${escape(book.author)}</div>
+        <div class="case-book-meta">${getIcon(c.icon, 14)} ${escape(c.name)} · ${escape(book.author)}</div>
       `;
       actionsEl.classList.remove("hidden");
       finished = true;

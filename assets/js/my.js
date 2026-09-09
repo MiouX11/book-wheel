@@ -75,7 +75,7 @@
       html += `
         <div class="my-cat-block">
           <h2 class="my-cat-title" style="color:${cat.color}">
-            ${cat.icon} ${escape(cat.name)}
+            ${getIcon(cat.icon, 18)} ${escape(cat.name)}
             <span class="cnt">${items.length}</span>
           </h2>
           <div class="my-cards">

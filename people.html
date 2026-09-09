@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="robots" content="noindex">
+  <title>人物志 · 读书</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <style>
+    .people-main { max-width: 960px; margin: 0 auto; padding: 32px 20px 80px; }
+    .people-header { margin-bottom: 32px; }
+    .people-header h1 { font-family: var(--font-serif); font-size: 30px; margin: 0 0 8px; }
+    .people-sub { color: var(--text-soft); font-size: 14px; margin: 0; }
+    .people-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+    .person-card { background: var(--card); border: 1px solid var(--border-soft); border-radius: var(--radius); padding: 20px; transition: all .18s ease; }
+    .person-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+    .person-top { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+    .person-avatar { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--font-serif); font-size: 22px; color: #fff; font-weight: 700; flex-shrink: 0; }
+    .person-name { font-family: var(--font-serif); font-size: 17px; font-weight: 600; margin: 0 0 2px; }
+    .person-title { font-size: 12px; color: var(--text-soft); margin: 0; }
+    .person-story { font-size: 14px; line-height: 1.7; color: var(--text); margin: 0 0 12px; }
+    .person-achievement { font-size: 13px; color: var(--text-soft); padding: 8px 12px; background: var(--bg-soft); border-radius: 8px; margin: 0; }
+    .person-achievement b { color: var(--primary-hover); }
+  </style>
+</head>
+<body class="page-people">
+  <nav class="topbar">
+    <a href="index.html" class="brand"><svg class="brand-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6c-1.9-1.4-4.3-1.8-8-1.4v13.2c3.7-.4 6.1 0 8 1.4 1.9-1.4 4.3-1.8 8-1.4V4.6c-3.7-.4-6.1 0-8 1.4z" fill="currentColor"/><path d="M12 6v13.2" stroke="var(--bg)" stroke-width="1.6"/></svg>读书</a>
+    <div class="nav-links">
+      <a href="index.html">首页</a>
+      <a href="library.html">书库</a>
+      <a href="people.html" class="active">人物</a>
+      <a href="my.html">我的</a>
+      <a href="login.html" id="nav-auth">登录</a>
+    </div>
+  </nav>
+
+  <main class="people-main">
+    <header class="people-header">
+      <h1>人物志</h1>
+      <p class="people-sub">这些人的故事，比书里写的更真实。</p>
+    </header>
+    <div id="people-grid" class="people-grid"></div>
+  </main>
+
+  <script src="assets/js/supabase-config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/icons.js"></script>
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/distilled-data.js"></script>
+  <script src="assets/js/reads.js"></script>
+  <script src="assets/js/cover.js"></script>
+  <script>
+    // 人物数据
+    const people = [
+      { name: "查理·芒格", title: "伯克希尔·哈撒韦副主席", color: "#f59e0b", story: "99 岁去世前还在工作。他说过：「我每天读书，直到死。」他的投资哲学影响了整个华尔街。", achievement: "与巴菲特搭档 40 年，管理资产从 20 亿美元增长到 2000 亿美元以上。" },
+      { name: "本杰明·格雷厄姆", title: "价值投资之父", color: "#f59e0b", story: "哥伦比亚大学教授，巴菲特的导师。他在大萧条后创立了价值投资理论，改变了整个投资行业。", achievement: "与多德合著《证券分析》，被巴菲特称为「投资圣经」。" },
+      { name: "维克多·弗兰克尔", title: "集中营幸存者、心理学家", color: "#ef4444", story: "在纳粹集中营失去所有亲人后，他创立了意义疗法。他说：「人可以被剥夺一切，除了选择态度的自由。」", achievement: "《活出生命的意义》销量超过 1000 万册，影响了全球数亿人。" },
+      { name: "查理·芒格", title: "伯克希尔·哈撒韦副主席", color: "#f59e0b", story: "他说过：「反过来想，总是反过来想。」这个简单的思维模型，帮助人们避免了许多错误。", achievement: "与巴菲特搭档 40 年，管理资产从 20 亿美元增长到 2000 亿美元以上。" },
+      { name: "丹尼尔·卡尼曼", title: "诺贝尔经济学奖得主", color: "#3b82f6", story: "心理学家跨界获得经济学奖。他发现了人类的两种思维系统，改变了我们对决策的理解。", achievement: "2002 年获得诺贝尔经济学奖，是首位以心理学研究获得该奖的学者。" },
+      { name: "瑞·达利欧", title: "桥水基金创始人", color: "#3b82f6", story: "创建全球最大的对冲基金，管理资产超过 1600 亿美元。他把失败视为学习的最好老师。", achievement: "桥水基金 40 年间年回报率 30% 以上，是华尔街最成功的对冲基金。" },
+      { name: "卡尔·纽波特", title: "计算机教授、作家", color: "#10b981", story: "他在社交媒体时代坚持不用 Facebook，专注于深度工作。他的研究帮助人们重新夺回注意力。", achievement: "《深度工作》在 25 个国家出版，影响了硅谷的整个工作文化。" },
+      { name: "埃隆·马斯克", title: "SpaceX & Tesla CEO", color: "#ec4899", story: "在 Starship 爆炸 3 次后说：「再来一次。」他把火星殖民从科幻变成现实。", achievement: "SpaceX 实现火箭回收复用，使发射成本降低 10 倍；Tesla 改变全球汽车产业。" },
+      { name: "萨提亚·纳德拉", title: "微软 CEO", color: "#ec4899", story: "接手微软时，股价从 3000 亿美元跌到 1300 亿美元。他转向云和 AI，带领微软重新崛起。", achievement: "在任期间微软市值增长 5 倍，从 1300 亿到 2.8 万亿美元。" },
+      { name: "菲尔·奈特", title: "耐克创始人", color: "#ec4899", story: "创业前 8 年几乎没赚钱，被投资人起诉。他坚持做鞋，最终创建了全球第二大体育用品公司。", achievement: "耐克市值从 0 增长到 1500 亿美元，成为全球最具价值的品牌之一。" },
+      { name: "马可·奥勒留", title: "罗马皇帝、斯多葛哲学家", color: "#6366f1", story: "统治罗马帝国 20 年，同时撰写《沉思录》。他在战场上、瘟疫中、政变中保持内心平静。", achievement: "《沉思录》被翻译成 50 种语言，影响了从华盛顿到奥巴马的所有领袖。" },
+      { name: "阿尔贝·加缪", title: "诺贝尔文学奖得主", color: "#6366f1", story: "在二战期间抵抗纳粹，创办地下报纸。他思考荒诞，却选择了拥抱生活。", achievement: "1957 年获得诺贝尔文学奖，成为最年轻的获奖者之一。" },
+      { name: "西格蒙德·弗洛伊德", title: "精神分析创始人", color: "#a855f7", story: "在维也纳创立精神分析学派，发现了无意识心理。他的理论改变了人类对自身的理解。", achievement: "《梦的解析》被视为心理学经典，影响了整个 20 世纪的心理学发展。" },
+      { name: "埃利奥特·阿伦森", title: "社会心理学先驱", color: "#14b8a6", story: "他研究了为什么人会从善良变得残忍。他的实验揭示了群体心理的黑暗面。", achievement: "《社会性动物》被 50 所大学采用，影响了几代心理学家。" },
+      { name: "霍华德·马克斯", title: "橡树资本创始人", color: "#f59e0b", story: "他在 2008 年金融危机前警告市场风险，被忽视。危机后，所有人都在引用他的话。", achievement: "橡树资本管理资产超过 1500 亿美元，是华尔街最受尊敬的投资者之一。" },
+      { name: "罗伯特·清崎", title: "富爸爸穷爸爸作者", color: "#8b5cf6", story: "他有两个爸爸：穷爸爸是会计师，富爸爸是商人。他选择了后者的思维方式。", achievement: "《富爸爸穷爸爸》销量超过 4000 万册，改变了全球数百万人的理财观念。" },
+      { name: "罗尔夫·多贝里", title: "瑞士作家、投资人", color: "#3b82f6", story: "他写了 50 个常见的思维谬误，帮助人们看清决策背后的偏见。", achievement: "《思考的艺术》被翻译成 30 种语言，成为畅销书。" },
+      { name: "凯利·麦格尼格尔", title: "斯坦福心理学家", color: "#10b981", story: "她研究为什么意志力会失败，发现了意志力的科学机制。", achievement: "《意志力》被 20 个国家出版，影响了全球的健康和行为改变运动。" },
+      { name: "博多·舍费尔", title: "德国作家、投资顾问", color: "#8b5cf6", story: "他在 10 岁时通过写书赚了第一个 100 万马克，20 岁前实现财务自由。", achievement: "《财务自由之路》在 25 个国家出版，帮助数百万人实现财务独立。" },
+      { name: "冯友兰", title: "中国哲学史家", color: "#6366f1", story: "他写了 7 卷 500 万字的《中国哲学史》，梳理了中国哲学 2000 年的历史。", achievement: "《中国哲学简史》被翻译成 20 种语言，成为了解中国哲学的入门经典。" },
+    ];
+
+    const grid = document.getElementById("people-grid");
+    grid.innerHTML = people.map(p => `
+      <div class="person-card">
+        <div class="person-top">
+          <div class="person-avatar" style="background:${p.color}">${p.name[0]}</div>
+          <div>
+            <p class="person-name">${p.name}</p>
+            <p class="person-title">${p.title}</p>
+          </div>
+        </div>
+        <p class="person-story">${p.story}</p>
+        <p class="person-achievement"><b>成就：</b>${p.achievement}</p>
+      </div>
+    `).join("");
+
+    // 登录状态
+    window.Auth?.onChange((user) => {
+      const link = document.getElementById("nav-auth");
+      if (!link) return;
+      if (user) {
+        link.textContent = (user.email || "").split("@")[0] || "已登录";
+        link.href = "my.html";
+      } else {
+        link.textContent = "登录";
+        link.href = "login.html";
+      }
+    });
+  </script>
+</body>
+</html>
