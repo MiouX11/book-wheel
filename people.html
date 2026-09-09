@@ -15,7 +15,8 @@
     .person-card { background: var(--card); border: 1px solid var(--border-soft); border-radius: var(--radius); padding: 20px; transition: all .18s ease; }
     .person-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
     .person-top { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
-    .person-avatar { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--font-serif); font-size: 22px; color: #fff; font-weight: 700; flex-shrink: 0; }
+    .person-avatar { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--font-serif); font-size: 22px; color: #fff; font-weight: 700; flex-shrink: 0; overflow: hidden; }
+    .person-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
     .person-name { font-family: var(--font-serif); font-size: 17px; font-weight: 600; margin: 0 0 2px; }
     .person-title { font-size: 12px; color: var(--text-soft); margin: 0; }
     .person-story { font-size: 14px; line-height: 1.7; color: var(--text); margin: 0 0 12px; }
@@ -57,7 +58,6 @@
       { name: "查理·芒格", title: "伯克希尔·哈撒韦副主席", color: "#f59e0b", story: "99 岁去世前还在工作。他说过：「我每天读书，直到死。」他的投资哲学影响了整个华尔街。", achievement: "与巴菲特搭档 40 年，管理资产从 20 亿美元增长到 2000 亿美元以上。" },
       { name: "本杰明·格雷厄姆", title: "价值投资之父", color: "#f59e0b", story: "哥伦比亚大学教授，巴菲特的导师。他在大萧条后创立了价值投资理论，改变了整个投资行业。", achievement: "与多德合著《证券分析》，被巴菲特称为「投资圣经」。" },
       { name: "维克多·弗兰克尔", title: "集中营幸存者、心理学家", color: "#ef4444", story: "在纳粹集中营失去所有亲人后，他创立了意义疗法。他说：「人可以被剥夺一切，除了选择态度的自由。」", achievement: "《活出生命的意义》销量超过 1000 万册，影响了全球数亿人。" },
-      { name: "查理·芒格", title: "伯克希尔·哈撒韦副主席", color: "#f59e0b", story: "他说过：「反过来想，总是反过来想。」这个简单的思维模型，帮助人们避免了许多错误。", achievement: "与巴菲特搭档 40 年，管理资产从 20 亿美元增长到 2000 亿美元以上。" },
       { name: "丹尼尔·卡尼曼", title: "诺贝尔经济学奖得主", color: "#3b82f6", story: "心理学家跨界获得经济学奖。他发现了人类的两种思维系统，改变了我们对决策的理解。", achievement: "2002 年获得诺贝尔经济学奖，是首位以心理学研究获得该奖的学者。" },
       { name: "瑞·达利欧", title: "桥水基金创始人", color: "#3b82f6", story: "创建全球最大的对冲基金，管理资产超过 1600 亿美元。他把失败视为学习的最好老师。", achievement: "桥水基金 40 年间年回报率 30% 以上，是华尔街最成功的对冲基金。" },
       { name: "卡尔·纽波特", title: "计算机教授、作家", color: "#10b981", story: "他在社交媒体时代坚持不用 Facebook，专注于深度工作。他的研究帮助人们重新夺回注意力。", achievement: "《深度工作》在 25 个国家出版，影响了硅谷的整个工作文化。" },
@@ -77,10 +77,14 @@
     ];
 
     const grid = document.getElementById("people-grid");
-    grid.innerHTML = people.map(p => `
+    grid.innerHTML = people.map(p => {
+      const safeName = p.name.replace('·', '-').replace(/ /g, '_');
+      return `
       <div class="person-card">
         <div class="person-top">
-          <div class="person-avatar" style="background:${p.color}">${p.name[0]}</div>
+          <div class="person-avatar" style="background:${p.color}">
+            <img src="assets/portraits/${safeName}.jpg" alt="${p.name}" onerror="this.style.display='none';this.parentElement.textContent='${p.name[0]}'">
+          </div>
           <div>
             <p class="person-name">${p.name}</p>
             <p class="person-title">${p.title}</p>
@@ -89,7 +93,7 @@
         <p class="person-story">${p.story}</p>
         <p class="person-achievement"><b>成就：</b>${p.achievement}</p>
       </div>
-    `).join("");
+    `}).join("");
 
     // 登录状态
     window.Auth?.onChange((user) => {
