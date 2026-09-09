@@ -77,13 +77,36 @@
     ];
 
     const grid = document.getElementById("people-grid");
+    // 人物照片映射
+    const portraitMap = {
+      "查理·芒格": "charlie-munger",
+      "本杰明·格雷厄姆": "benjamin-graham",
+      "维克多·弗兰克尔": "viktor-frankl",
+      "丹尼尔·卡尼曼": "daniel-kahneman",
+      "瑞·达利欧": "ray-dalio",
+      "卡尔·纽波特": "cal-newport",
+      "埃隆·马斯克": "elon-musk",
+      "萨提亚·纳德拉": "satya-nadella",
+      "菲尔·奈特": "phil-knight",
+      "马可·奥勒留": "marcus-aurelius",
+      "阿尔贝·加缪": "albert-camus",
+      "西格蒙德·弗洛伊德": "sigmund-freud",
+      "埃利奥特·阿伦森": "elliot-aronson",
+      "霍华德·马克斯": "howard-marks",
+      "罗伯特·清崎": "robert-kiyosaki",
+      "罗尔夫·多贝里": "rolf-dobelli",
+      "凯利·麦格尼格尔": "kelly-mcgonigal",
+      "博多·舍费尔": "bodo-schaefer",
+      "冯友兰": "feng-youlan",
+    };
+
     grid.innerHTML = people.map(p => {
-      const safeName = p.name.replace('·', '-').replace(/ /g, '_');
+      const imgFile = portraitMap[p.name] || p.name.replace('·', '-').replace(/ /g, '_');
       return `
       <div class="person-card">
         <div class="person-top">
           <div class="person-avatar" style="background:${p.color}">
-            <img src="assets/portraits/${safeName}.jpg" alt="${p.name}" onerror="this.style.display='none';this.parentElement.textContent='${p.name[0]}'">
+            <img src="assets/portraits/${imgFile}.jpg" alt="${p.name}" onerror="this.style.display='none';this.parentElement.textContent='${p.name[0]}'">
           </div>
           <div>
             <p class="person-name">${p.name}</p>
