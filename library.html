@@ -19,12 +19,21 @@
   </nav>
 
   <main class="library-main">
+    <div class="library-bg" aria-hidden="true">
+      <span class="bg-blob bg-blob-a"></span>
+      <span class="bg-blob bg-blob-b"></span>
+      <span class="bg-noise"></span>
+    </div>
+
     <header class="library-header">
       <h1>书库</h1>
       <p class="library-sub" id="library-count">共 0 本</p>
       <div class="library-controls">
-        <input id="search-input" type="search" class="search-input"
-               placeholder="🔍 搜书名、作者或类别…" autocomplete="off">
+        <label class="search-wrap">
+          <svg class="search-ico" viewBox="0 0 24 24" aria-hidden="true" width="16" height="16"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M16.5 16.5l4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <input id="search-input" type="search" class="search-input"
+                 placeholder="搜书名、作者或类别…" autocomplete="off">
+        </label>
         <div id="cat-filter" class="cat-filter" role="tablist"></div>
       </div>
     </header>
