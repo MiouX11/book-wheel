@@ -19,6 +19,47 @@
     return;
   }
 
+  // ---------- 封面预加载 ----------
+  // 原先转轮用 loading="lazy"，而转轮初始被平移到视口外，
+  // 懒加载经常来不及触发 —— 转出时看到的是占位色块而不是封面。
+  const coverCache = new Map(); // src -> Promise<boolean>
+
+  function coverSrc(b) {
+    return `assets/covers/${b.id}.jpg`;
+  }
+
+  function preloadCover(b) {
+    const src = coverSrc(b);
+    let p = coverCache.get(src);
+    if (!p) {
+      p = new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => resolve(true);
+        img.onerror = () => resolve(false);
+        img.src = src;
+      });
+      coverCache.set(src, p);
+    }
+    return p;
+  }
+
+  // 页面空闲时后台逐批预热全部封面（每批 4 张，不抢首屏）
+  function warmUpCovers() {
+    let i = 0;
+    const idle = (fn) => {
+      if (window.requestIdleCallback) window.requestIdleCallback(fn, { timeout: 400 });
+      else setTimeout(fn, 180);
+    };
+    const step = () => {
+      for (let n = 0; n < 4 && i < books.length; n++, i++) preloadCover(books[i]);
+      if (i < books.length) idle(step);
+    };
+    idle(step);
+  }
+
+  // 数据就绪后立刻在后台预热封面，抽奖时直接命中缓存
+  warmUpCovers();
+
   // 渲染类目 chip - 直接跳转到书库
   chipsEl.innerHTML = categories
     .map(
@@ -105,13 +146,9 @@
 
     reel.style.transform = `translateX(${initialX}px)`;
 
-    setTimeout(() => {
-      reel.style.transition = `transform ${DURATION}ms cubic-bezier(0.12, 0.8, 0.08, 1)`;
-      reel.style.transform = `translateX(${finalX}px)`;
-    }, 140);
-
     let finished = false;
-    setTimeout(() => {
+
+    function finish() {
       const cards = reel.querySelectorAll(".case-card");
       const hit = cards[TARGET];
       if (hit) hit.classList.add("hit");
@@ -123,7 +160,19 @@
       actionsEl.classList.remove("hidden");
       finished = true;
       busy = false;
-    }, 140 + DURATION + 120);
+    }
+
+    // 起转前先确保"开奖落点及相邻几张"就绪（这几张才是用户真正看到的），
+    // 其余 40 张已去掉 lazy 会并行加载；最多等 700ms，不拖垮开箱节奏。
+    const keyCards = items.slice(Math.max(0, TARGET - 2), TARGET + 3);
+    const keyReady = Promise.all(keyCards.map(preloadCover));
+    Promise.race([keyReady, new Promise((r) => setTimeout(r, 700))]).then(() => {
+      setTimeout(() => {
+        reel.style.transition = `transform ${DURATION}ms cubic-bezier(0.12, 0.8, 0.08, 1)`;
+        reel.style.transform = `translateX(${finalX}px)`;
+      }, 140);
+      setTimeout(finish, 140 + DURATION + 120);
+    });
 
     overlay.querySelector(".case-go").addEventListener("click", () => {
       location.href = `book.html?id=${encodeURIComponent(book.id)}`;
@@ -145,7 +194,7 @@
     return `
       <div class="case-card" style="--accent:${c.color}">
         <span class="case-char" style="background:linear-gradient(135deg,${c.color},${c.color}cc)">${escape(b.title[0])}</span>
-        <img src="assets/covers/${b.id}.jpg" alt="" loading="lazy" onerror="this.remove()">
+        <img src="assets/covers/${b.id}.jpg" alt="" decoding="async" onerror="this.remove()">
       </div>
     `;
   }
