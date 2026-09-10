@@ -5,8 +5,95 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>读书 · 10 分钟精读</title>
   <link rel="stylesheet" href="assets/css/style.css">
+  <style>
+    /* ===================== 主页深色玻璃拟态主题（青柠起始页风格） =====================
+       仅作用于 .page-home.theme-dawn，不影响书库/人物/我的/登录等浅色页面 */
+    .page-home.theme-dawn {
+      --bg: #0f1216;
+      --bg-soft: rgba(255,255,255,0.06);
+      --card: rgba(255,255,255,0.08);
+      --card-solid: rgba(28,32,38,0.72);
+      --border: rgba(255,255,255,0.14);
+      --border-soft: rgba(255,255,255,0.09);
+      --text: #f5f7fa;
+      --text-soft: rgba(245,247,250,0.82);
+      --text-mute: rgba(245,247,250,0.55);
+      --primary: #ff974f;          /* 青柠橙 */
+      --primary-hover: #ff7a2f;
+      --primary-soft: rgba(255,151,79,0.16);
+      --accent: #337bf7;           /* 青柠蓝 */
+      --shadow: 0 8px 40px rgba(0,0,0,0.35);
+      --shadow-md: 0 12px 48px rgba(0,0,0,0.4);
+      --shadow-lg: 0 24px 72px rgba(0,0,0,0.5);
+
+      /* 背景图：山谷 + 深色遮罩 */
+      background: linear-gradient(180deg, rgba(15,18,22,0.55) 0%, rgba(15,18,22,0.30) 30%, rgba(15,18,22,0.72) 100%),
+                  linear-gradient(135deg, rgba(51,123,247,0.10), rgba(255,151,79,0.10)),
+                  url("assets/img/hero-bg.jpg") center / cover no-repeat fixed,
+                  #0f1216;
+      background-blend-mode: normal;
+    }
+
+    /* 顶栏：毛玻璃 */
+    .page-home.theme-dawn .topbar {
+      background: rgba(15,18,22,0.42);
+      backdrop-filter: blur(18px) saturate(160%);
+      -webkit-backdrop-filter: blur(18px) saturate(160%);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 1px 0 rgba(255,255,255,0.04);
+    }
+    .page-home.theme-dawn .brand { color: #fff; }
+    .page-home.theme-dawn .brand svg { color: var(--primary); }
+    .page-home.theme-dawn .brand:hover { color: #fff; }
+    .page-home.theme-dawn .nav-links a { color: var(--text-soft); }
+    .page-home.theme-dawn .nav-links a.active,
+    .page-home.theme-dawn .nav-links a:hover { color: var(--primary); }
+
+    /* Hero：白字、玻璃胶囊 */
+    .page-home.theme-dawn .picker-main {
+      max-width: 860px;
+      padding-top: clamp(64px, 12vh, 120px);
+    }
+    .page-home.theme-dawn .hero-eyebrow {
+      background: rgba(255,151,79,0.15);
+      border: 1px solid rgba(255,151,79,0.35);
+      color: #ffb88a;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    .page-home.theme-dawn .picker-title {
+      color: #fff;
+      text-shadow: 0 2px 24px rgba(0,0,0,0.45);
+    }
+    .page-home.theme-dawn .picker-sub { color: rgba(245,247,250,0.85); text-shadow: 0 1px 14px rgba(0,0,0,0.5); }
+
+    /* 类目椅子：玻璃卡片 */
+    .page-home.theme-dawn .chip {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.14);
+      color: rgba(245,247,250,0.88);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+    }
+    .page-home.theme-dawn .chip:hover {
+      border-color: var(--chip-color, var(--primary));
+      box-shadow: 0 10px 30px rgba(0,0,0,0.35), 0 0 0 1px var(--chip-color, var(--primary)) inset;
+      color: #fff;
+    }
+
+    /* 主按钮：橙渐变 + 光晕 */
+    .page-home.theme-dawn .pick-btn {
+      background: linear-gradient(135deg, #ff974f, #ff6a2f);
+      box-shadow: 0 12px 32px rgba(255,120,47,0.45), 0 0 0 1px rgba(255,255,255,0.12) inset;
+    }
+    .page-home.theme-dawn .pick-btn:hover {
+      box-shadow: 0 18px 44px rgba(255,120,47,0.55), 0 0 0 1px rgba(255,255,255,0.18) inset;
+    }
+    .page-home.theme-dawn .picker-status { color: rgba(245,247,250,0.75); text-shadow: 0 1px 12px rgba(0,0,0,0.5); }
+  </style>
 </head>
-<body class="page-home">
+<body class="page-home theme-dawn">
   <nav class="topbar">
     <a href="index.html" class="brand"><svg class="brand-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6c-1.9-1.4-4.3-1.8-8-1.4v13.2c3.7-.4 6.1 0 8 1.4 1.9-1.4 4.3-1.8 8-1.4V4.6c-3.7-.4-6.1 0-8 1.4z" fill="currentColor"/><path d="M12 6v13.2" stroke="var(--bg)" stroke-width="1.6"/></svg>读书</a>
     <div class="nav-links">
