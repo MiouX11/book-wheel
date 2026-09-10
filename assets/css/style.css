@@ -553,7 +553,7 @@ button {
   改版要点
   1. 封面：去掉固定 aspect-ratio + object-fit:cover 的裁切，改为按原始比例自然成高
   2. 布局：CSS 多列瀑布流书墙，封面高低错落但不留空洞
-  3. 背景：真实书架照片大幅模糊 + 暖纸面纱，照片"看得见"但不抢内容
+  3. 背景：真实书架照片保持清晰可辨（与首页一致，仅极轻柔化）+ 暖色面纱，照片"看得见"但不抢内容
   4. 分类色：以 currentColor 驱动短横线 + 图标，替代原来的彩色胶囊
 */
 
@@ -580,23 +580,24 @@ body.page-library {
 .library-bg::before {
   content: "";
   position: absolute;
-  inset: -60px;
-  background: url("../img/library-bg.jpg") center 42% / cover no-repeat;
-  filter: blur(20px) saturate(1.16) brightness(1.01) contrast(1.04);
-  transform: scale(1.12);
+  inset: -26px;
+  background: url("../img/library-bg.jpg") center 45% / cover no-repeat;
+  /* 与首页一致：背景照片保持清晰可辨，只做极轻的柔化 */
+  filter: blur(4px) saturate(1.06) brightness(1.02) contrast(1.02);
+  transform: scale(1.04);
 }
 .library-bg::after {
   content: "";
   position: absolute;
   inset: 0;
+  /* 顶部（报头 + 筛选区）压得更实以保证文字对比；下方留通透给照片 */
   background:
-    radial-gradient(150% 105% at 50% -18%,
-      rgba(255, 255, 252, 0.18) 0%,
-      rgba(251, 245, 235, 0.36) 52%,
-      rgba(234, 222, 202, 0.58) 100%),
     linear-gradient(180deg,
-      rgba(255, 250, 240, 0.08) 0%,
-      rgba(246, 238, 225, 0.18) 100%);
+      rgba(255, 253, 248, 0.68) 0%,
+      rgba(253, 249, 242, 0.54) 21%,
+      rgba(250, 245, 236, 0.32) 38%,
+      rgba(246, 240, 229, 0.24) 100%),
+    radial-gradient(140% 90% at 50% 0%, rgba(255, 255, 253, 0.10), transparent 70%);
 }
 
 /* ---------- 主体 ---------- */
@@ -638,7 +639,7 @@ body.page-library {
   grid-row: 1;
   align-self: end;
   margin: 0 0 7px;
-  color: rgba(74, 58, 36, 0.6);
+  color: rgba(56, 43, 24, 0.78);
   font-size: 13px;
   letter-spacing: 0.09em;
   font-variant-numeric: tabular-nums;
@@ -709,7 +710,7 @@ body.page-library {
   border: none;
   border-radius: 7px;
   background: none;
-  color: rgba(74, 58, 36, 0.66);
+  color: rgba(56, 43, 24, 0.82);
   font-size: 13px;
   font-weight: 500;
   transition: color .18s, background .18s;
@@ -740,7 +741,7 @@ body.page-library {
 .cat-tab .cnt {
   font-size: 11px;
   font-weight: 500;
-  color: rgba(74, 58, 36, 0.4);
+  color: rgba(56, 43, 24, 0.56);
   font-variant-numeric: tabular-nums;
 }
 .cat-tab.active .cnt { color: currentColor; opacity: .62; }
@@ -892,8 +893,12 @@ body.page-library {
 /* 照片底上给文字留一层极淡白晕，保证可读 */
 .lib-card-tag,
 .lib-card-title,
-.lib-card-author {
-  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.9), 0 0 12px rgba(255, 255, 255, 0.6);
+.lib-card-author,
+.library-header h1,
+.library-sub,
+.cat-tab,
+.cat-tab .cnt {
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.9), 0 0 12px rgba(255, 255, 255, 0.65);
 }
 
 /* ---------- 空状态 ---------- */
