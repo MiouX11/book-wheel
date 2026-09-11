@@ -45,7 +45,7 @@
       <article class="comm-card">
         <div class="comm-head">
           <span class="comm-avatar">${avatarImg(r)}<span class="reflect-avatar-init">${esc(initial(r.author_name))}</span></span>
-          <span class="comm-author">${esc(r.author_name || "书友")}</span>
+          <span class="comm-author">${esc(r.author_name || "书友")}${r.author_code ? `<span class="author-code">@${esc(r.author_code)}</span>` : ""}</span>
           <span class="comm-time">${esc(ago(r.created_at))}</span>
         </div>
         ${r.content ? `<p class="comm-body">${esc(r.content).replace(/\n/g, "<br>")}</p>` : ""}

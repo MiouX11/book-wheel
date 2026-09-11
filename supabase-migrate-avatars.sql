@@ -47,3 +47,13 @@ update storage.buckets
    set file_size_limit = 2097152,
        allowed_mime_types = array['image/jpeg', 'image/png', 'image/webp']
  where id = 'avatars';
+
+
+-- ============================================================
+-- 4. 用户 ID（首次随机生成，30 天可改一次）
+--    存在每条感悟的 author_code 上，社区里显示为 @ID
+-- ============================================================
+alter table reflections add column if not exists author_code text;
+
+create index if not exists reflections_author_code_idx
+  on reflections (lower(author_code));

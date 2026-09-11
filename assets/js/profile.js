@@ -72,6 +72,37 @@
     });
   }
 
+  // ---------- 用户 ID ----------
+  const CODE_WORDS = ["青杉", "夜航", "白鹿", "南山", "孤舟", "远山", "拾贝", "观澜", "听雨",
+    "逐光", "初雪", "扶摇", "星野", "寒江", "平芜", "皓月", "疏桐", "竹西", "兰舟", "云阶",
+    "松声", "泉音", "苔径", "枫桥", "柳浪", "橘洲", "鹤汀", "苇岸", "沉璧", "春汀"];
+  const CODE_MAX = 20;
+  const CODE_COOLDOWN = 30 * 24 * 3600 * 1000;   // 30 天
+
+  function genCode() {
+    const w = CODE_WORDS[Math.floor(Math.random() * CODE_WORDS.length)];
+    return w + String(Math.floor(Math.random() * 9000) + 1000);
+  }
+
+  function daysLeft(ts) {
+    if (!ts) return 0;
+    const passed = Date.now() - Number(ts);
+    const left = Math.ceil((CODE_COOLDOWN - passed) / 86400000);
+    return left > 0 ? left : 0;
+  }
+
+  async function ensureUserCode() {
+    const m = meta();
+    if (m.user_code) return m.user_code;
+    const code = genCode();
+    try {
+      await Auth.client().auth.updateUser({
+        data: { user_code: code, user_code_changed_at: Date.now() },
+      });
+    } catch (e) { console.warn("生成用户 ID 失败", e); return ""; }
+    return code;
+  }
+
   // ---------- 渲染 ----------
   let currentUser = null;
   let avatarBust = Date.now();
@@ -90,8 +121,15 @@
       return;
     }
     const m = meta();
-    const name = m.display_name || (currentUser.email || "").split("@")[0] || "书友";
+    const name = m.display_name || m.user_code ||
+      (currentUser.email || "").split("@")[0] || "书友";
+    const code = m.user_code || "";
     const url = avatarUrl(currentUser.id, m.avatar_updated_at || avatarBust);
+    const left = daysLeft(m.user_code_changed_at);
+    const codeHint = left > 0
+      ? `每 30 天可改一次，还剩 ${left} 天`
+      : "每 30 天可改一次，现在可以改";
+
     profileEl.innerHTML = `
       <div class="profile-inner">
         <div class="profile-avatar-wrap" id="avatar-wrap" title="点击更换头像">
@@ -107,6 +145,12 @@
             <span>昵称</span>
             <input type="text" id="profile-name" maxlength="20" value="${esc(name)}">
           </label>
+          <label class="profile-field">
+            <span>用户 ID</span>
+            <input type="text" id="profile-code" maxlength="${CODE_MAX}"
+              value="${esc(code)}" ${left > 0 ? "disabled" : ""}>
+          </label>
+          <p class="profile-hint" id="profile-hint">${esc(codeHint)}</p>
           <div class="profile-actions">
             <button type="button" class="btn btn-primary btn-sm" id="profile-save">保存资料</button>
             <span class="profile-email">${esc(currentUser.email || "")}</span>
@@ -139,10 +183,31 @@
     });
 
     document.getElementById("profile-save").addEventListener("click", async () => {
-      const val = document.getElementById("profile-name").value.trim().slice(0, 20);
-      if (!val) { toast("昵称不能为空"); return; }
+      const nameVal = document.getElementById("profile-name").value.trim().slice(0, 20);
+      const codeEl = document.getElementById("profile-code");
+      const codeVal = codeEl.value.trim();
+      if (!nameVal) { toast("昵称不能为空"); return; }
+
+      const patch = {};
+      if (nameVal !== (meta().display_name || "")) patch.display_name = nameVal;
+
+      if (codeVal !== (meta().user_code || "")) {
+        if (daysLeft(meta().user_code_changed_at) > 0) {
+          toast("用户 ID 每 30 天只能改一次");
+          codeEl.value = meta().user_code || "";
+          return;
+        }
+        if (!/^[\u4e00-\u9fa5A-Za-z0-9_]{2,20}$/.test(codeVal)) {
+          toast("ID 用 2-20 位汉字/字母/数字，不带空格");
+          return;
+        }
+        patch.user_code = codeVal;
+        patch.user_code_changed_at = Date.now();
+      }
+
+      if (Object.keys(patch).length === 0) { toast("没有改动"); return; }
       try {
-        await Auth.client().auth.updateUser({ data: { display_name: val } });
+        await Auth.client().auth.updateUser({ data: patch });
         toast("已保存");
         renderProfile();
       } catch (e) {
@@ -219,6 +284,7 @@
       setTimeout(resolve, 900);
     });
     currentUser = window.Auth ? Auth.getUser() : null;
+    if (currentUser) await ensureUserCode();
     renderProfile();
     renderMine();
   }

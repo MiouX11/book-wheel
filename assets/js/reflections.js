@@ -42,10 +42,17 @@ window.Reflections = (function () {
   // ---------- 署名 ----------
   function defaultName() {
     const u = user();
+    const m = (u && u.user_metadata) || {};
+    if (m.display_name) return m.display_name;
+    if (m.user_code) return m.user_code;
     return u && u.email ? String(u.email).split("@")[0] : "书友";
   }
   function displayName() {
     return localStorage.getItem(NAME_KEY) || defaultName();
+  }
+  function userCode() {
+    const u = user();
+    return (u && u.user_metadata && u.user_metadata.user_code) || "";
   }
   function setDisplayName(n) {
     const v = String(n || "").trim().slice(0, 20);
@@ -127,6 +134,7 @@ window.Reflections = (function () {
         .insert({
           user_id: u.id,
           author_name: name,
+          author_code: userCode(),
           book_id: bookId,
           content: content,
           image_urls: urls,
@@ -267,6 +275,7 @@ window.Reflections = (function () {
     list,
     remove,
     isMine,
+    userCode,
     syncLocalToCloud,
     displayName,
     setDisplayName,

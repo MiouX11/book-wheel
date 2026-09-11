@@ -187,7 +187,7 @@
       <article class="reflect-card" data-id="${esc(r.id)}">
         <div class="reflect-card-head">
           <span class="reflect-avatar">${avatarImg(r)}<span class="reflect-avatar-init">${esc(initial(r.author_name))}</span></span>
-          <span class="reflect-author">${esc(r.author_name || "书友")}</span>
+          <span class="reflect-author">${esc(r.author_name || "书友")}${r.author_code ? `<span class="author-code">@${esc(r.author_code)}</span>` : ""}</span>
           <span class="reflect-time">${esc(ago(r.created_at))}</span>
           ${mine ? '<button type="button" class="reflect-del" title="删除">删除</button>' : ""}
         </div>
