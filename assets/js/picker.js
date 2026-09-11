@@ -43,22 +43,32 @@
     return p;
   }
 
-  // 页面空闲时后台逐批预热全部封面（每批 4 张，不抢首屏）
+  // 首屏渲染完之后，再在空闲时预热部分封面（每批 4 张）。
+  // 不预热全部 82 张：那会在后台吃掉几 MB 流量，反而拖慢整站。
+  // 封面本身已压缩到 ~30-70KB，未命中的那几张点开时几乎瞬时加载。
+  const WARMUP_LIMIT = 24;
+
   function warmUpCovers() {
     let i = 0;
     const idle = (fn) => {
-      if (window.requestIdleCallback) window.requestIdleCallback(fn, { timeout: 400 });
-      else setTimeout(fn, 180);
+      if (window.requestIdleCallback) window.requestIdleCallback(fn, { timeout: 600 });
+      else setTimeout(fn, 250);
     };
     const step = () => {
-      for (let n = 0; n < 4 && i < books.length; n++, i++) preloadCover(books[i]);
-      if (i < books.length) idle(step);
+      for (let n = 0; n < 4 && i < Math.min(books.length, WARMUP_LIMIT); n++, i++) {
+        preloadCover(books[i]);
+      }
+      if (i < Math.min(books.length, WARMUP_LIMIT)) idle(step);
     };
     idle(step);
   }
 
-  // 数据就绪后立刻在后台预热封面，抽奖时直接命中缓存
-  warmUpCovers();
+  // 等首屏画完再开始预热，不跟首屏抢带宽
+  if (document.readyState === "complete") {
+    setTimeout(warmUpCovers, 300);
+  } else {
+    window.addEventListener("load", () => setTimeout(warmUpCovers, 300));
+  }
 
   // 渲染类目 - 纯文字，直接跳转到书库
   chipsEl.innerHTML = categories

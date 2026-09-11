@@ -172,13 +172,21 @@
     }
   });
 
+  function avatarImg(r) {
+    const base = window.SUPABASE_CONFIG && window.SUPABASE_CONFIG.url;
+    if (!base || !r.user_id || String(r.user_id) === "local") return "";
+    const u = window.Auth && Auth.getUser();
+    const bust = (u && u.user_metadata && u.user_metadata.avatar_updated_at) || "";
+    return `<img class="avatar-img" loading="lazy" alt="" src="${esc(base.replace(/\/$/, ""))}/storage/v1/object/public/avatars/${esc(r.user_id)}/avatar.jpg${bust ? "?v=" + bust : ""}" onerror="this.remove()">`;
+  }
+
   function cardHtml(r) {
     const imgs = (r.image_urls || []).filter(Boolean);
     const mine = Reflections.isMine(r);
     return `
       <article class="reflect-card" data-id="${esc(r.id)}">
         <div class="reflect-card-head">
-          <span class="reflect-avatar">${esc(initial(r.author_name))}</span>
+          <span class="reflect-avatar">${avatarImg(r)}<span class="reflect-avatar-init">${esc(initial(r.author_name))}</span></span>
           <span class="reflect-author">${esc(r.author_name || "书友")}</span>
           <span class="reflect-time">${esc(ago(r.created_at))}</span>
           ${mine ? '<button type="button" class="reflect-del" title="删除">删除</button>' : ""}

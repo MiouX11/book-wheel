@@ -32,13 +32,19 @@
     return n ? n[0] : "书";
   }
 
+  function avatarImg(r) {
+    const base = window.SUPABASE_CONFIG && window.SUPABASE_CONFIG.url;
+    if (!base || !r.user_id) return "";
+    return `<img class="avatar-img" loading="lazy" alt="" src="${esc(base.replace(/\/$/, ""))}/storage/v1/object/public/avatars/${esc(r.user_id)}/avatar.jpg" onerror="this.remove()">`;
+  }
+
   function cardHtml(r) {
     const imgs = (r.image_urls || []).filter(Boolean);
     const title = titles[r.book_id] || r.book_id;
     return `
       <article class="comm-card">
         <div class="comm-head">
-          <span class="comm-avatar">${esc(initial(r.author_name))}</span>
+          <span class="comm-avatar">${avatarImg(r)}<span class="reflect-avatar-init">${esc(initial(r.author_name))}</span></span>
           <span class="comm-author">${esc(r.author_name || "书友")}</span>
           <span class="comm-time">${esc(ago(r.created_at))}</span>
         </div>

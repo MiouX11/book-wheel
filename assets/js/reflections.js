@@ -134,6 +134,12 @@ window.Reflections = (function () {
         .select()
         .single();
       if (error) throw new Error("发布失败：" + error.message);
+      // 顺手把昵称存进账号资料，供头像/昵称展示
+      try {
+        if (name && displayName() === name) {
+          supa().auth.updateUser({ data: { display_name: name } });
+        }
+      } catch (e) { /* 非关键 */ }
       return data;
     }
 
@@ -160,6 +166,7 @@ window.Reflections = (function () {
   async function list(opts) {
     opts = opts || {};
     const bookId = opts.bookId || null;
+    const mine = !!opts.mine;
     const limit = opts.limit || 9;
     const offset = opts.offset || 0;
 
@@ -170,6 +177,11 @@ window.Reflections = (function () {
         .order("created_at", { ascending: false })
         .range(offset, offset + limit - 1);
       if (bookId) q = q.eq("book_id", bookId);
+      if (mine) {
+        const u = user();
+        if (!u) return { items: [], mode: "cloud" };
+        q = q.eq("user_id", u.id);
+      }
       const { data, error } = await q;
       if (!error && data) return { items: data, mode: "cloud" };
       console.warn("云端感悟读取失败，回落本地", error);

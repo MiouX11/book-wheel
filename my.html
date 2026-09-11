@@ -22,18 +22,25 @@
     <section id="my-header" class="my-header">
       <p>加载中……</p>
     </section>
+    <section id="profile-card" class="profile-card"></section>
     <section id="my-list" class="my-list"></section>
+    <section class="mine-reflect-wrap">
+      <h2 class="reflect-title">我的感悟</h2>
+      <p class="reflect-sub">你发过的所有感悟，可以在这里删除。</p>
+      <div id="mine-reflect" class="mine-reflect"></div>
+    </section>
   </main>
 
   <script src="assets/js/supabase-config.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="assets/vendor/supabase.min.js"></script>
   <script src="assets/js/auth.js"></script>
   <script src="assets/js/icons.js"></script>
 <script src="assets/js/data.js"></script>
-  <script src="assets/js/distilled-data.js"></script>
-  <script src="assets/js/reads.js"></script>
+    <script src="assets/js/reads.js"></script>
+  <script src="assets/js/reflections.js"></script>
   <script src="assets/js/cover.js"></script>
   <script src="assets/js/my.js"></script>
+  <script src="assets/js/profile.js"></script>
   <script>
     window.Auth?.onChange((user) => {
       const link = document.getElementById("nav-auth");
