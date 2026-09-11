@@ -49,17 +49,10 @@
     .page-home.theme-dawn .nav-links a.active,
     .page-home.theme-dawn .nav-links a:hover { color: var(--primary); }
 
-    /* Hero：白字、玻璃胶囊 */
+    /* Hero：白字 */
     .page-home.theme-dawn .picker-main {
       max-width: 860px;
-      padding-top: clamp(64px, 12vh, 120px);
-    }
-    .page-home.theme-dawn .hero-eyebrow {
-      background: rgba(255,151,79,0.15);
-      border: 1px solid rgba(255,151,79,0.35);
-      color: #ffb88a;
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
+      padding-top: clamp(72px, 14vh, 140px);
     }
     .page-home.theme-dawn .picker-title {
       color: #fff;
@@ -67,28 +60,19 @@
     }
     .page-home.theme-dawn .picker-sub { color: rgba(245,247,250,0.85); text-shadow: 0 1px 14px rgba(0,0,0,0.5); }
 
-    /* 类目椅子：玻璃卡片 */
-    .page-home.theme-dawn .chip {
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.14);
-      color: rgba(245,247,250,0.88);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      box-shadow: 0 4px 20px rgba(0,0,0,0.25);
-    }
-    .page-home.theme-dawn .chip:hover {
-      border-color: var(--chip-color, var(--primary));
-      box-shadow: 0 10px 30px rgba(0,0,0,0.35), 0 0 0 1px var(--chip-color, var(--primary)) inset;
-      color: #fff;
-    }
+    /* 类目：纯文字 */
+    .page-home.theme-dawn .cat-link { color: rgba(245,247,250,0.62); }
+    .page-home.theme-dawn .cat-link:hover { color: var(--primary); }
+    .page-home.theme-dawn .cat-sep { color: rgba(245,247,250,0.45); }
 
-    /* 主按钮：橙渐变 + 光晕 */
+    /* 主按钮 */
     .page-home.theme-dawn .pick-btn {
-      background: linear-gradient(135deg, #ff974f, #ff6a2f);
-      box-shadow: 0 12px 32px rgba(255,120,47,0.45), 0 0 0 1px rgba(255,255,255,0.12) inset;
+      background: var(--primary);
+      box-shadow: 0 6px 22px rgba(255,120,47,0.35);
     }
     .page-home.theme-dawn .pick-btn:hover {
-      box-shadow: 0 18px 44px rgba(255,120,47,0.55), 0 0 0 1px rgba(255,255,255,0.18) inset;
+      background: var(--primary-hover);
+      box-shadow: 0 10px 30px rgba(255,120,47,0.45);
     }
     .page-home.theme-dawn .picker-status { color: rgba(245,247,250,0.75); text-shadow: 0 1px 12px rgba(0,0,0,0.5); }
   </style>
@@ -108,12 +92,11 @@
 
   <main class="picker-main">
     <div class="hero">
-      <span class="hero-eyebrow">纯净高知学习社区 · 每天 10 分钟精读</span>
       <h1 class="picker-title">今天，想来学点什么？</h1>
-      <p class="picker-sub">选一个类别定向抽取，或直接随机来一本。先看一个问题，再读精炼全文。</p>
+      <p class="picker-sub">选一个方向，或直接随机来一本。先看一个问题，再读精炼全文。</p>
     </div>
 
-    <div id="cat-chips" class="cat-chips" role="list" aria-label="类别定向选择"></div>
+    <div id="cat-chips" class="cat-chips" role="list" aria-label="类别"></div>
 
     <button id="pick-btn" class="pick-btn">随机来一本</button>
 

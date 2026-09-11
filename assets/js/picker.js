@@ -60,20 +60,16 @@
   // 数据就绪后立刻在后台预热封面，抽奖时直接命中缓存
   warmUpCovers();
 
-  // 渲染类目 chip - 直接跳转到书库
+  // 渲染类目 - 纯文字，直接跳转到书库
   chipsEl.innerHTML = categories
     .map(
-      (c) => `<button class="chip" role="listitem"
-        data-cat="${c.id}"
-        style="--chip-color:${c.color}">
-        <span class="chip-icon">${getIcon(c.icon, 16)}</span>
-        <span class="chip-label">${c.name}</span>
-      </button>`
+      (c) => `<a class="cat-link" role="listitem" href="library.html?cat=${encodeURIComponent(c.id)}"
+        data-cat="${c.id}">${c.name}</a><span class="cat-sep" aria-hidden="true">·</span>`
     )
     .join("");
 
   chipsEl.addEventListener("click", (ev) => {
-    const chip = ev.target.closest(".chip");
+    const chip = ev.target.closest(".cat-link");
     if (!chip) return;
     const cat = chip.dataset.cat;
     const inCat = books.filter((b) => b.categoryId === cat);
