@@ -21,11 +21,13 @@
   <main class="login-main">
     <div class="login-card">
       <h1 id="login-title">登录 / 注册</h1>
-      <p class="login-sub">登录后可以在多个设备同步『读过的书』。</p>
+      <p class="login-sub">登录后可以发感悟到社区，多设备同步『读过的书』。</p>
 
       <div id="login-warn" class="login-warn hidden">
-        Supabase 尚未配置，账号功能暂不可用。<br>
-        请按 <a href="README.md" target="_blank">README</a> 里的步骤填 URL / anon key。
+        <b>社区账号服务还没接上</b>（Supabase 未配置），所以现在登录/注册不可用。<br>
+        开通只要 3 步：① supabase.com 注册免费项目 ② 把 <code>supabase-schema.sql</code> 粘进 SQL Editor 运行
+        ③ 把 URL 和 anon key 填进 <code>assets/js/supabase-config.js</code>。
+        详细步骤见 <a href="README.md" target="_blank">README</a>。
       </div>
 
       <form id="login-form">
@@ -52,8 +54,9 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="assets/js/auth.js"></script>
   <script src="assets/js/icons.js"></script>
-<script src="assets/js/data.js"></script>
+  <script src="assets/js/data.js"></script>
   <script src="assets/js/reads.js"></script>
+  <script src="assets/js/reflections.js"></script>
   <script>
     const form = document.getElementById("login-form");
     const msg = document.getElementById("login-msg");
@@ -68,7 +71,7 @@
     Auth.onChange((user) => {
       if (user) {
         title.textContent = "已登录";
-        msg.innerHTML = `已登录：<b>${user.email}</b> · <a href="my.html">去我的</a> · <button id="lo" class="btn btn-ghost btn-sm">退出</button>`;
+        msg.innerHTML = `已登录：<b>${user.email}</b> · <a href="community.html">去社区</a> · <a href="my.html">去我的</a> · <button id="lo" class="btn btn-ghost btn-sm">退出</button>`;
         form.style.display = "none";
         document.getElementById("lo").onclick = async () => {
           await Auth.signOut();
@@ -83,6 +86,23 @@
       b.addEventListener("click", () => (action = b.dataset.action));
     });
 
+    function friendly(e) {
+      const m = String(e.message || e);
+      if (/Email not confirmed/i.test(m)) return "邮箱还没验证：请先去邮箱点一下验证链接，再回来登录。";
+      if (/Invalid login credentials/i.test(m)) return "邮箱或密码不对。";
+      if (/already registered/i.test(m)) return "这个邮箱已经注册过了，直接点「登录」。";
+      if (/rate limit/i.test(m)) return "尝试太频繁了，等一两分钟再试。";
+      if (/Password should be at least/i.test(m)) return "密码至少要 6 位。";
+      return m;
+    }
+
+    async function syncAll() {
+      const r = await Reads.syncLocalToCloud();
+      let p = 0;
+      try { p = (await Reflections.syncLocalToCloud()).pushed; } catch (e) { console.warn(e); }
+      return { reads: r.pushed, reflections: p };
+    }
+
     form.addEventListener("submit", async (ev) => {
       ev.preventDefault();
       msg.textContent = "";
@@ -93,20 +113,31 @@
 
       try {
         if (action === "signup") {
-          await Auth.signUp(email, password);
-          msg.className = "login-msg ok";
-          msg.textContent = "注册成功。若开启了『邮箱验证』，请查收邮件后再登录。";
+          const res = await Auth.signUp(email, password);
+          if (res && res.session) {
+            // 关闭了邮箱验证时会直接拿到会话
+            msg.className = "login-msg ok";
+            msg.textContent = "注册成功，正在合并本机内容…";
+            const n = await syncAll();
+            msg.textContent = "注册成功。" +
+              (n.reads + n.reflections ? `已合并本机 ${n.reads} 条已读、${n.reflections} 条感悟。` : "");
+            setTimeout(() => (location.href = "community.html"), 700);
+          } else {
+            msg.className = "login-msg ok";
+            msg.textContent = "注册成功。请去邮箱点一下验证链接，再回来登录。";
+          }
         } else {
           await Auth.signIn(email, password);
           msg.className = "login-msg ok";
-          msg.textContent = "登录成功，正在同步本地记录…";
-          const r = await Reads.syncLocalToCloud();
-          msg.textContent = r.pushed ? `登录成功，已合并 ${r.pushed} 条本地记录。` : "登录成功。";
-          setTimeout(() => (location.href = "my.html"), 700);
+          msg.textContent = "登录成功，正在合并本机内容…";
+          const n = await syncAll();
+          msg.textContent = "登录成功。" +
+            (n.reads + n.reflections ? `已合并本机 ${n.reads} 条已读、${n.reflections} 条感悟。` : "");
+          setTimeout(() => (location.href = "community.html"), 700);
         }
       } catch (e) {
         msg.className = "login-msg err";
-        msg.textContent = "失败：" + (e.message || e);
+        msg.textContent = "失败：" + friendly(e);
       } finally {
         form.querySelectorAll("button").forEach((b) => (b.disabled = false));
       }

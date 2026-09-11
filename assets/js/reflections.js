@@ -189,6 +189,58 @@ window.Reflections = (function () {
     writeLocal(readLocal().filter((r) => r.id !== id));
   }
 
+  function dataURLtoBlob(dataUrl) {
+    const parts = String(dataUrl).split(",");
+    const mime = (String(parts[0]).match(/data:([^;]+)/) || [])[1] || "image/jpeg";
+    const bin = atob(parts[1] || "");
+    const buf = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) buf[i] = bin.charCodeAt(i);
+    return new Blob([buf], { type: mime });
+  }
+
+  // 登录后调用：把本机模式下发的感悟迁到云端（图片一并上传），成功的从本地移除
+  async function syncLocalToCloud() {
+    const s = supa();
+    const u = user();
+    if (!s || !u) return { pushed: 0 };
+    const arr = readLocal();
+    if (arr.length === 0) return { pushed: 0 };
+
+    let pushed = 0;
+    const failed = [];
+    for (const r of arr) {
+      try {
+        const urls = [];
+        for (let i = 0; i < (r.image_urls || []).length; i++) {
+          const src = r.image_urls[i];
+          if (/^data:image\//i.test(src)) {
+            urls.push(await uploadToStorage(dataURLtoBlob(src), u.id, i));
+          } else if (/^https?:\/\//i.test(src)) {
+            urls.push(src);
+          }
+        }
+        const { error } = await s.from("reflections").insert({
+          user_id: u.id,
+          author_name: r.author_name || displayName(),
+          book_id: r.book_id,
+          content: r.content || "",
+          image_urls: urls,
+          created_at: r.created_at,
+        });
+        if (error) throw error;
+        pushed++;
+      } catch (e) {
+        console.warn("同步本地感悟失败，保留在本机", e);
+        failed.push(r);
+      }
+    }
+    if (pushed > 0) {
+      const kept = arr.filter((r) => failed.indexOf(r) !== -1);
+      try { writeLocal(kept); } catch (e) { /* 空间不足也不阻断登录 */ }
+    }
+    return { pushed };
+  }
+
   function isMine(rec) {
     if (supa()) {
       const u = user();
@@ -203,6 +255,7 @@ window.Reflections = (function () {
     list,
     remove,
     isMine,
+    syncLocalToCloud,
     displayName,
     setDisplayName,
     compressImage,
