@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>读书 · 10 分钟精读</title>
+  <title>简书 · 纯净高知学习社区</title>
   <link rel="stylesheet" href="assets/css/style.css">
   <style>
     /* ===================== 主页深色玻璃拟态主题（青柠起始页风格） =====================
@@ -95,9 +95,10 @@
 </head>
 <body class="page-home theme-dawn">
   <nav class="topbar">
-    <a href="index.html" class="brand"><svg class="brand-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6c-1.9-1.4-4.3-1.8-8-1.4v13.2c3.7-.4 6.1 0 8 1.4 1.9-1.4 4.3-1.8 8-1.4V4.6c-3.7-.4-6.1 0-8 1.4z" fill="currentColor"/><path d="M12 6v13.2" stroke="var(--bg)" stroke-width="1.6"/></svg>读书</a>
+    <a href="index.html" class="brand"><svg class="brand-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6c-1.9-1.4-4.3-1.8-8-1.4v13.2c3.7-.4 6.1 0 8 1.4 1.9-1.4 4.3-1.8 8-1.4V4.6c-3.7-.4-6.1 0-8 1.4z" fill="currentColor"/><path d="M12 6v13.2" stroke="var(--bg)" stroke-width="1.6"/></svg>简书<span class="brand-tag">纯净高知学习社区</span></a>
     <div class="nav-links">
       <a href="index.html" class="active">首页</a>
+      <a href="#community">社区</a>
       <a href="library.html">书库</a>
       <a href="people.html">人物</a>
       <a href="my.html">我的</a>
@@ -107,7 +108,7 @@
 
   <main class="picker-main">
     <div class="hero">
-      <span class="hero-eyebrow">每天 10 分钟精读</span>
+      <span class="hero-eyebrow">纯净高知学习社区 · 每天 10 分钟精读</span>
       <h1 class="picker-title">今天，想来学点什么？</h1>
       <p class="picker-sub">选一个类别定向抽取，或直接随机来一本。先看一个问题，再读精炼全文。</p>
     </div>
@@ -119,6 +120,18 @@
     <p id="picker-status" class="picker-status" aria-live="polite"></p>
   </main>
 
+  <section class="community" id="community" aria-labelledby="community-title">
+    <div class="community-head">
+      <h2 class="community-title" id="community-title">社区</h2>
+      <p class="community-sub">书友们刚写下的感悟</p>
+    </div>
+    <p class="community-hint hidden" id="community-hint">
+      当前是本机模式：这里只显示你自己在这台设备上发布的内容。
+    </p>
+    <div class="community-grid" id="community-grid"></div>
+    <button type="button" class="btn btn-ghost btn-sm hidden" id="community-more">加载更多</button>
+  </section>
+
   <script src="assets/js/supabase-config.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="assets/js/auth.js"></script>
@@ -127,6 +140,8 @@
   <script src="assets/js/distilled-data.js"></script>
   <script src="assets/js/reads.js"></script>
   <script src="assets/js/picker.js"></script>
+  <script src="assets/js/reflections.js"></script>
+  <script src="assets/js/community.js"></script>
   <script>
     window.Auth?.onChange((user) => {
       const link = document.getElementById("nav-auth");

@@ -24,7 +24,7 @@
   const category = await BookData.getCategoryById(book.categoryId);
   const alreadyRead = await Reads.has(book.id);
 
-  document.title = `《${book.title}》· 读书转盘`;
+  document.title = `《${book.title}》· 简书`;
 
   const coverHtml = Cover.html(book, category);
 
